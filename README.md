@@ -1,2 +1,16 @@
-# jpa-manytomany-springboot-h2
-JPA Many-To-Many Relationship Mapping Example with Spring Data JPA, Spring Boot, H2
+# JPA Many-To-Many Relationship Mapping Example with Spring Data JPA, Spring Boot, H2
+
+## What you'll need
+
+* JDK 1.8 or later
+* Maven 3 or later
+
+## Stack
+
+* Spring Boot
+* Spring Data JPA
+* H2
+
+## Run
+
+`mvn spring-boot:run`

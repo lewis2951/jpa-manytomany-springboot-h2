@@ -1,6 +1,7 @@
 package hello;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -29,55 +30,61 @@ public class AppRunner implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
+		runWithBook();
+		runWithPublisher();
+	}
+
+	private void runWithBook() throws Exception {
 		// save a couple of books
 		final Publisher publisherA = new Publisher("Publisher A");
 		final Publisher publisherB = new Publisher("Publisher B");
 		final Publisher publisherC = new Publisher("Publisher C");
 
-		bookRepository.save(new HashSet<Book>() {
-			{
-				add(new Book("Book A", new HashSet<Publisher>() {
-					{
-						add(publisherA);
-						add(publisherB);
-					}
-				}));
+		final Book bookA = new Book("Book A");
+		Set<Publisher> bookAs = new HashSet<>();
+		bookAs.add(publisherA);
+		bookAs.add(publisherB);
+		bookA.setPublishers(bookAs);
 
-				add(new Book("Book B", new HashSet<Publisher>() {
-					{
-						add(publisherA);
-						add(publisherC);
-					}
-				}));
-			}
-		});
+		final Book bookB = new Book("Book B");
+		Set<Publisher> bookBs = new HashSet<>();
+		bookBs.add(publisherA);
+		bookBs.add(publisherC);
+		bookB.setPublishers(bookBs);
+
+		Set<Book> books = new HashSet<>();
+		books.add(bookA);
+		books.add(bookB);
+		bookRepository.save(books);
 
 		// fetch all books
 		for (Book book : bookRepository.findAll()) {
 			logger.info(book.toString());
 		}
+	}
 
+	private void runWithPublisher() {
 		// save a couple of publishers
 		final Book bookA = new Book("Book A");
 		final Book bookB = new Book("Book B");
+		final Book bookC = new Book("Book C");
 
-		publisherRepository.save(new HashSet<Publisher>() {
-			{
-				add(new Publisher("Publisher A", new HashSet<Book>() {
-					{
-						add(bookA);
-						add(bookB);
-					}
-				}));
+		final Publisher publisherA = new Publisher("Publisher A");
+		Set<Book> publisherAs = new HashSet<>();
+		publisherAs.add(bookA);
+		publisherAs.add(bookB);
+		publisherA.setBooks(publisherAs);
 
-				add(new Publisher("Publisher B", new HashSet<Book>() {
-					{
-						add(bookA);
-						add(bookB);
-					}
-				}));
-			}
-		});
+		final Publisher publisherB = new Publisher("Publisher B");
+		Set<Book> publisherBs = new HashSet<>();
+		publisherBs.add(bookA);
+		publisherBs.add(bookC);
+		publisherB.setBooks(publisherBs);
+
+		Set<Publisher> publishers = new HashSet<>();
+		publishers.add(publisherA);
+		publishers.add(publisherB);
+		publisherRepository.save(publishers);
 
 		// fetch all publishers
 		for (Publisher publisher : publisherRepository.findAll()) {

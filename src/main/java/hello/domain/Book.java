@@ -1,5 +1,6 @@
 package hello.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,11 +14,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 @Entity(name = "BOOK")
-public class Book {
+public class Book implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private Integer id;
 
 	@Column(name = "NAME")
 	private String name;
@@ -41,10 +44,34 @@ public class Book {
 		this.publishers = publishers;
 	}
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Set<Publisher> getPublishers() {
+		return publishers;
+	}
+
+	public void setPublishers(Set<Publisher> publishers) {
+		this.publishers = publishers;
+	}
+
 	@Override
 	public String toString() {
 		if (null == publishers) {
-			return String.format("Book [id=%s, name=%s]", id, name);
+			return String.format("Book [id=%s, name=%s, publishers=%s]", id, name, "is null");
 		}
 
 		return String.format("Book [id=%s, name=%s, publishers=%s]", id, name, publishers);

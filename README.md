@@ -14,3 +14,8 @@
 ## Run
 
 `mvn spring-boot:run`
+
+## Reference
+
+* https://github.com/hellokoding/jpa-manytomany-springboot-hsql
+* https://hellokoding.com/jpa-many-to-many-relationship-mapping-example-with-spring-boot-hsql/

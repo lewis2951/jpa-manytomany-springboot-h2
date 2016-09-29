@@ -32,6 +32,7 @@ public class AppRunner implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) throws Exception {
 		runWithBook();
+		bookRepository.deleteAll();
 		runWithPublisher();
 	}
 
@@ -41,17 +42,17 @@ public class AppRunner implements CommandLineRunner {
 		final Publisher publisherB = new Publisher("Publisher B");
 		final Publisher publisherC = new Publisher("Publisher C");
 
-		final Book bookA = new Book("Book A");
 		Set<Publisher> bookAs = new HashSet<>();
 		bookAs.addAll(Arrays.asList(publisherA, publisherB));
-		bookA.setPublishers(bookAs);
+		final Book bookA = new Book("Book A", bookAs);
 
-		final Book bookB = new Book("Book B");
 		Set<Publisher> bookBs = new HashSet<>();
 		bookBs.addAll(Arrays.asList(publisherB, publisherC));
-		bookB.setPublishers(bookBs);
+		final Book bookB = new Book("Book B", bookBs);
 
-		bookRepository.save(Arrays.asList(bookA, bookB));
+		final Book bookC = new Book("Book C");
+
+		bookRepository.save(Arrays.asList(bookA, bookB, bookC));
 
 		// fetch all books
 		bookRepository.findAll().forEach(book -> {
@@ -65,15 +66,13 @@ public class AppRunner implements CommandLineRunner {
 		final Book bookB = new Book("Book B");
 		final Book bookC = new Book("Book C");
 
-		final Publisher publisherA = new Publisher("Publisher A");
 		Set<Book> publisherAs = new HashSet<>();
 		publisherAs.addAll(Arrays.asList(bookA, bookB));
-		publisherA.setBooks(publisherAs);
+		final Publisher publisherA = new Publisher("Publisher A", publisherAs);
 
-		final Publisher publisherB = new Publisher("Publisher B");
 		Set<Book> publisherBs = new HashSet<>();
 		publisherBs.addAll(Arrays.asList(bookB, bookC));
-		publisherB.setBooks(publisherBs);
+		final Publisher publisherB = new Publisher("Publisher B", publisherBs);
 
 		publisherRepository.save(Arrays.asList(publisherA, publisherB));
 

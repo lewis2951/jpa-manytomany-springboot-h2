@@ -71,10 +71,16 @@ public class Book implements Serializable {
 	@Override
 	public String toString() {
 		if (null == publishers) {
-			return String.format("Book [id=%s, name=%s, publishers=%s]", id, name, "is null");
+			return String.format("Book [id=%s, name=%s, publishers=%s]", id, name, "<EMPTY>");
 		}
 
-		return String.format("Book [id=%s, name=%s, publishers=%s]", id, name, publishers);
+		StringBuffer publisherNames = new StringBuffer("<");
+		publishers.forEach(publisher -> {
+			publisherNames.append(publisher.getName() + ",");
+		});
+		publisherNames.append(">");
+
+		return String.format("Book [id=%s, name=%s, publishers=%s]", id, name, publisherNames);
 	}
 
 }

@@ -1,5 +1,6 @@
 package hello;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,25 +43,20 @@ public class AppRunner implements CommandLineRunner {
 
 		final Book bookA = new Book("Book A");
 		Set<Publisher> bookAs = new HashSet<>();
-		bookAs.add(publisherA);
-		bookAs.add(publisherB);
+		bookAs.addAll(Arrays.asList(publisherA, publisherB));
 		bookA.setPublishers(bookAs);
 
 		final Book bookB = new Book("Book B");
 		Set<Publisher> bookBs = new HashSet<>();
-		bookBs.add(publisherA);
-		bookBs.add(publisherC);
+		bookBs.addAll(Arrays.asList(publisherB, publisherC));
 		bookB.setPublishers(bookBs);
 
-		Set<Book> books = new HashSet<>();
-		books.add(bookA);
-		books.add(bookB);
-		bookRepository.save(books);
+		bookRepository.save(Arrays.asList(bookA, bookB));
 
 		// fetch all books
-		for (Book book : bookRepository.findAll()) {
+		bookRepository.findAll().forEach(book -> {
 			logger.info(book.toString());
-		}
+		});
 	}
 
 	private void runWithPublisher() {
@@ -71,25 +67,20 @@ public class AppRunner implements CommandLineRunner {
 
 		final Publisher publisherA = new Publisher("Publisher A");
 		Set<Book> publisherAs = new HashSet<>();
-		publisherAs.add(bookA);
-		publisherAs.add(bookB);
+		publisherAs.addAll(Arrays.asList(bookA, bookB));
 		publisherA.setBooks(publisherAs);
 
 		final Publisher publisherB = new Publisher("Publisher B");
 		Set<Book> publisherBs = new HashSet<>();
-		publisherBs.add(bookA);
-		publisherBs.add(bookC);
+		publisherBs.addAll(Arrays.asList(bookB, bookC));
 		publisherB.setBooks(publisherBs);
 
-		Set<Publisher> publishers = new HashSet<>();
-		publishers.add(publisherA);
-		publishers.add(publisherB);
-		publisherRepository.save(publishers);
+		publisherRepository.save(Arrays.asList(publisherA, publisherB));
 
 		// fetch all publishers
-		for (Publisher publisher : publisherRepository.findAll()) {
+		publisherRepository.findAll().forEach(publisher -> {
 			logger.info(publisher.toString());
-		}
+		});
 	}
 
 }

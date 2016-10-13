@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import hello.domain.Author;
 import hello.domain.Book;
-import hello.domain.Publisher;
+import hello.repository.AuthorRepository;
 import hello.repository.BookRepository;
-import hello.repository.PublisherRepository;
 
 @Component
 public class AppRunner implements CommandLineRunner {
@@ -24,61 +24,99 @@ public class AppRunner implements CommandLineRunner {
 
 	@Autowired
 	private BookRepository bookRepository;
-
 	@Autowired
-	private PublisherRepository publisherRepository;
+	private AuthorRepository authorRepository;
 
-	@Override
 	@Transactional
+	@Override
 	public void run(String... args) throws Exception {
-		runWithBook();
-		bookRepository.deleteAll();
-		runWithPublisher();
+		save();
+		display();
+
+		deleteBook();
+		display();
+
+		removeAuthor();
+		display();
+
+		marge();
+		display();
 	}
 
-	private void runWithBook() throws Exception {
-		// save a couple of books
-		final Publisher publisherA = new Publisher("Publisher A");
-		final Publisher publisherB = new Publisher("Publisher B");
-		final Publisher publisherC = new Publisher("Publisher C");
+	/**
+	 * 初始化
+	 * 
+	 * <ul>
+	 * <li><i>Spring in Action</i> : Lewis, Mark</li>
+	 * <li><i>Spring Boot in Action</i> : Lewis, Peter</li>
+	 * </ul>
+	 */
+	private void save() {
+		Author lewis = new Author("Lewis");
+		Author mark = new Author("Mark");
+		Author peter = new Author("Peter");
 
-		Set<Publisher> bookAs = new HashSet<>();
-		bookAs.addAll(Arrays.asList(publisherA, publisherB));
-		final Book bookA = new Book("Book A", bookAs);
+		Set<Author> springs = new HashSet<>();
+		springs.addAll(Arrays.asList(lewis, mark));
+		Book spring = new Book("Spring in Action", springs);
 
-		Set<Publisher> bookBs = new HashSet<>();
-		bookBs.addAll(Arrays.asList(publisherB, publisherC));
-		final Book bookB = new Book("Book B", bookBs);
+		Set<Author> springboots = new HashSet<>();
+		springboots.addAll(Arrays.asList(lewis, peter));
+		Book springboot = new Book("Spring Boot in Action", springboots);
 
-		final Book bookC = new Book("Book C");
+		bookRepository.save(Arrays.asList(spring, springboot));
+	}
 
-		bookRepository.save(Arrays.asList(bookA, bookB, bookC));
+	/**
+	 * 删除 <i>Spring in Action</i>。<u>级联删除原因，作者 Mark 也一同被删除，但是作者 Lewis 不会被删除。</u>
+	 * 
+	 * <ul>
+	 * <li><i>Spring Boot in Action</i> : Lewis, Peter</li>
+	 * </ul>
+	 */
+	private void deleteBook() {
+		Book spring = bookRepository.findByName("Spring in Action");
+		bookRepository.delete(spring);
+	}
 
-		// fetch all books
-		bookRepository.findAll().forEach(book -> {
+	/**
+	 * 将 <i>Spring Boot in Action</i> 的作者 Peter 移除。<u>虽然没有书与作者 Peter 关联，但是作者
+	 * Peter 不会被删除。</u>
+	 * 
+	 * <ul>
+	 * <li><i>Spring Boot in Action</i> : Lewis</li>
+	 * <li><i>null</i> : Peter
+	 * </ul>
+	 */
+	private void removeAuthor() {
+		Book springboot = bookRepository.findByName("Spring Boot in Action");
+		Author peter = authorRepository.findByName("Peter");
+		springboot.getAuthors().remove(peter);
+		bookRepository.save(springboot);
+	}
+
+	/**
+	 * 修改书名和作者
+	 */
+	private void marge() {
+		Book springboot = bookRepository.findByName("Spring Boot in Action");
+		springboot.setName("Spring Boot in Action (1st Edition)");
+
+		Author jacob = new Author("Jacob");
+		springboot.getAuthors().add(jacob);
+
+		bookRepository.save(springboot);
+	}
+
+	/**
+	 * 展示数据
+	 */
+	private void display() {
+		bookRepository.findAll().stream().forEach(book -> {
 			logger.info(book.toString());
 		});
-	}
-
-	private void runWithPublisher() {
-		// save a couple of publishers
-		final Book bookA = new Book("Book A");
-		final Book bookB = new Book("Book B");
-		final Book bookC = new Book("Book C");
-
-		Set<Book> publisherAs = new HashSet<>();
-		publisherAs.addAll(Arrays.asList(bookA, bookB));
-		final Publisher publisherA = new Publisher("Publisher A", publisherAs);
-
-		Set<Book> publisherBs = new HashSet<>();
-		publisherBs.addAll(Arrays.asList(bookB, bookC));
-		final Publisher publisherB = new Publisher("Publisher B", publisherBs);
-
-		publisherRepository.save(Arrays.asList(publisherA, publisherB));
-
-		// fetch all publishers
-		publisherRepository.findAll().forEach(publisher -> {
-			logger.info(publisher.toString());
+		authorRepository.findAll().stream().forEach(author -> {
+			logger.info(author.toString());
 		});
 	}
 

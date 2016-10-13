@@ -6,4 +6,6 @@ import hello.domain.Book;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
+	public Book findByName(String name);
+
 }

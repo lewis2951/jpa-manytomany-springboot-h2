@@ -392,3 +392,5 @@ public class BookTests {
 ## 资源
 
 * **源码地址：** https://github.com/lewis007/jpa-manytomany-springboot-h2.git
+* **博客地址：**
+* **参考网址：** http://www.cnblogs.com/luxh/archive/2012/05/30/2527123.html

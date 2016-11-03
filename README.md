@@ -3,15 +3,20 @@
 这里通过一个完整的例子展示如何通过 `JPA` 对两张表（多对多关联）进行增删改查操作。
 
 ## 前提
+
 * JDK 8+
 * Maven 3+
 
 ## 表结构
 
-<img src="doc/Book.png" >
+![Table](doc/Book.png "表结构")
 
-## 创建 Maven 项目
+## 例子
+
+### 创建 Maven 项目
+
 `pom.xml`
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -62,6 +67,7 @@
 ```
 
 `src/main/resources/application.properties`
+
 ```
 ## JPA Settings
 spring.jpa.generate-ddl: true
@@ -71,6 +77,7 @@ spring.jpa.show-sql: true
 ```
 
 `src/main/java/hello/Application.java`
+
 ```java
 package hello;
 
@@ -87,8 +94,10 @@ public class Application {
 }
 ```
 
-## 创建实体
+### 创建实体
+
 `src/main/java/hello/domain/Book.java`
+
 ```java
 package hello.domain;
 
@@ -166,7 +175,9 @@ public class Book implements Serializable {
 
 }
 ```
+
 `src/main/java/hello/domain/Author.java`
+
 ```java
 package hello.domain;
 
@@ -233,8 +244,10 @@ public class Author implements Serializable {
 }
 ```
 
-## 创建 Repository
+### 创建 Repository
+
 `src/main/java/hello/repository/BookRepository.java`
+
 ```java
 package hello.repository;
 
@@ -248,7 +261,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
 }
 ```
+
 `src/main/java/hello/repository/AuthorRepository.java`
+
 ```java
 package hello.repository;
 
@@ -262,9 +277,12 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
 
 }
 ```
+## 单元测试
 
-## 创建 jUnit
+### 编写单元测试
+
 `src/test/java/hello/BookTests.java`
+
 ```java
 package hello;
 
@@ -386,11 +404,14 @@ public class BookTests {
 }
 ```
 
-## 执行测试用例
-`mvn clean test`
+### 执行测试用例
+
+```
+mvn clean test
+```
 
 ## 资源
 
 * **源码地址：** https://github.com/lewis007/jpa-manytomany-springboot-h2.git
-* **博客地址：**
+* **博客地址：** http://blog.csdn.net/lewis_007/article/details/53006602
 * **参考网址：** http://www.cnblogs.com/luxh/archive/2012/05/30/2527123.html

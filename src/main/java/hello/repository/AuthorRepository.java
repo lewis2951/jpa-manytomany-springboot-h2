@@ -1,11 +1,10 @@
 package hello.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import hello.domain.Author;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
 
-	public Author findByName(String name);
+    Author findByName(String name);
 
 }

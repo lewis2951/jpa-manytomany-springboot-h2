@@ -28,7 +28,7 @@ public class AppRunner implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        save();
+        init();
         display();
 
         findBookByName("in Action");
@@ -37,24 +37,29 @@ public class AppRunner implements CommandLineRunner {
         findBookByNameContaining("action");
         findBookByNameContaining("Action");
 
-        margeBook("Spring Boot in Action");
+        reInit();
         display();
 
-        deleteBook("Spring in Action");
+        margeBook("Spring in Action");
         display();
 
-        addAuthor("Spring in Action", "Jacob");
+        deleteBook("Spring Boot in Action");
         display();
 
-        removeAuthor("Spring in Action", "Mark");
+        reInit();
         display();
 
-//
-//        removeAuthor();
-//        display();
-//
-//        marge();
-//        display();
+        plusAuthor("Spring in Action", "Jacob");
+        plusAuthor("Spring in Action", "Mark");
+        display();
+
+        removeAuthor("Spring Boot in Action", "Peter");
+        removeAuthor("Spring Boot in Action", "Lewis");
+        display();
+
+        deleteAuthor("Peter");
+        deleteAuthor("Lewis");
+        display();
     }
 
     /**
@@ -72,9 +77,9 @@ public class AppRunner implements CommandLineRunner {
     }
 
     /**
-     * 初始化
+     * 初始化（方式一）
      */
-    private void save() {
+    private void init() {
         logger.info("Initial 2 books with 3 authors & 4 relationship ...");
 
         Author lewis = new Author("Lewis");
@@ -90,6 +95,42 @@ public class AppRunner implements CommandLineRunner {
         Book springboot = new Book("Spring Boot in Action", springboots);
 
         bookRepository.save(Arrays.asList(spring, springboot));
+    }
+
+    /**
+     * 初始化（方式二）
+     */
+    private void init2() {
+        logger.info("Initial 2 books with 3 authors & 4 relationship ...");
+
+        Author lewis = new Author("Lewis");
+        Author mark = new Author("Mark");
+        Author peter = new Author("Peter");
+
+        Book spring = new Book("Spring in Action");
+        spring.getAuthors().addAll(Arrays.asList(lewis, mark));
+
+        Book springboot = new Book("Spring Boot in Action");
+        springboot.getAuthors().addAll(Arrays.asList(lewis, peter));
+
+        bookRepository.save(Arrays.asList(spring, springboot));
+    }
+
+    /**
+     * 重新初始化
+     */
+    private void reInit() {
+        deleteAllBooks();
+        init2();
+    }
+
+    /**
+     * 清空
+     */
+    private void deleteAllBooks() {
+        logger.info(String.format("Delete All Books ..."));
+
+        bookRepository.deleteAll();
     }
 
     /**
@@ -134,7 +175,7 @@ public class AppRunner implements CommandLineRunner {
             return;
         }
 
-        book.setName(name + " (1st Edition)");
+        book.setName(name + " (4st Edition)");
         bookRepository.save(book);
     }
 
@@ -160,7 +201,7 @@ public class AppRunner implements CommandLineRunner {
      * @param bookName
      * @param authorName
      */
-    private void addAuthor(String bookName, String authorName) {
+    private void plusAuthor(String bookName, String authorName) {
         logger.info(String.format("addAuthor [book_name:%s, author_name:%s] ...", bookName, authorName));
 
         Book book = bookRepository.findByName(bookName);
@@ -169,10 +210,11 @@ public class AppRunner implements CommandLineRunner {
         }
 
         Author author = authorRepository.findByName(authorName);
-        if (null == author) {
+        if (null != author) {
             return;
         }
 
+        author = new Author(authorName);
         book.getAuthors().add(author);
         bookRepository.save(book);
     }
@@ -198,6 +240,18 @@ public class AppRunner implements CommandLineRunner {
 
         book.getAuthors().remove(author);
         bookRepository.save(book);
+    }
+
+    /**
+     * 删除
+     *
+     * @param name
+     */
+    private void deleteAuthor(String name) {
+        logger.info(String.format("deleteAuthor [name:%s] ...", name));
+
+        Author author = authorRepository.findByName(name);
+        authorRepository.delete(author);
     }
 
 }

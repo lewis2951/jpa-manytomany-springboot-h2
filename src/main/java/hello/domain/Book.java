@@ -2,6 +2,7 @@ package hello.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,6 +29,7 @@ public class Book implements Serializable {
     public Book(String name) {
         super();
         this.name = name;
+        this.authors = new HashSet<>();
     }
 
     public Book(String name, Set<Author> authors) {

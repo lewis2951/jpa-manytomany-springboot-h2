@@ -28,37 +28,72 @@ public class AppRunner implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        // --------------------------------------------------
+        // 初始化
+        // --------------------------------------------------
         init();
         display();
 
+        // 精确查找
         findBookByName("in Action");
         findBookByName("Spring in Action");
 
+        // 模糊查找，但不支持忽略大小写、忽略收尾空格
         findBookByNameContaining("action");
+        findBookByNameContaining("Action ");
         findBookByNameContaining("Action");
 
-        reInit();
+        // --------------------------------------------------
+        // 重新初始化，通过bookRepository演示对Book的操作
+        // --------------------------------------------------
+        reInit(); // 初始化采用方式二
         display();
 
+        // 更改书名
         margeBook("Spring in Action");
         display();
 
-        deleteBook("Spring Boot in Action");
+        // 删除书籍，只有该书籍的作者也会被删除
+        deleteBook("Spring Boot in Action"); // Peter也会被删除
         display();
 
+        // --------------------------------------------------
+        // 重新初始化，通过bookRepository演示对Author的操作
+        // --------------------------------------------------
         reInit();
         display();
 
+        // 追加作者
         plusAuthor("Spring in Action", "Jacob");
         plusAuthor("Spring in Action", "Mark");
         display();
 
-        removeAuthor("Spring Boot in Action", "Peter");
-        removeAuthor("Spring Boot in Action", "Lewis");
+        // 移除作者，无作者的书籍也会被移除
+        removeAuthor("Spring Boot in Action", "Peter"); // Peter未删除
+        removeAuthor("Spring Boot in Action", "Lewis"); // Perter未删除，Spring Boot in Action被删除
         display();
 
+        // 删除全部书籍，所有书籍相关的作者都会被删除
+        deleteAllBooks(); // Peter未删除
+        display();
+
+        // --------------------------------------------------
+        // 重新初始化，通过authorRepository演示对Author的操作
+        // --------------------------------------------------
+        // 删除全部作者，未与书籍关联的作者会被删除
+        deleteAllAuthors();
+        display();
+
+        init2(); // 初始化采用方式二
+        display();
+
+        // 删除作者，啥都删不掉
         deleteAuthor("Peter");
         deleteAuthor("Lewis");
+        display();
+
+        // 删除全部作者，啥都删不掉
+        deleteAllAuthors();
         display();
     }
 
@@ -175,7 +210,7 @@ public class AppRunner implements CommandLineRunner {
             return;
         }
 
-        book.setName(name + " (4st Edition)");
+        book.setName(name + " (4th Edition)");
         bookRepository.save(book);
     }
 
@@ -202,7 +237,7 @@ public class AppRunner implements CommandLineRunner {
      * @param authorName
      */
     private void plusAuthor(String bookName, String authorName) {
-        logger.info(String.format("addAuthor [book_name:%s, author_name:%s] ...", bookName, authorName));
+        logger.info(String.format("plusAuthor [book_name:%s, author_name:%s] ...", bookName, authorName));
 
         Book book = bookRepository.findByName(bookName);
         if (null == book) {
@@ -252,6 +287,15 @@ public class AppRunner implements CommandLineRunner {
 
         Author author = authorRepository.findByName(name);
         authorRepository.delete(author);
+    }
+
+    /**
+     * 删除全部
+     */
+    private void deleteAllAuthors() {
+        logger.info(String.format("Delete All Authors ..."));
+
+        authorRepository.deleteAll();
     }
 
 }

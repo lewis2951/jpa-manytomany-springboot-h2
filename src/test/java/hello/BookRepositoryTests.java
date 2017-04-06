@@ -13,8 +13,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,90 +26,128 @@ public class BookRepositoryTests {
     private AuthorRepository authorRepository;
 
     @Before
-    public void save() {
+    public void init() {
         Author lewis = new Author("Lewis");
         Author mark = new Author("Mark");
         Author peter = new Author("Peter");
 
-        Set<Author> springs = new HashSet<>();
-        springs.addAll(Arrays.asList(lewis, mark));
-        Book spring = new Book("Spring in Action", springs);
+        Book spring = new Book("Spring in Action");
+        spring.getAuthors().addAll(Arrays.asList(lewis, mark));
 
-        Set<Author> springboots = new HashSet<>();
-        springboots.addAll(Arrays.asList(lewis, peter));
-        Book springboot = new Book("Spring Boot in Action", springboots);
+        Book springboot = new Book("Spring Boot in Action");
+        springboot.getAuthors().addAll(Arrays.asList(lewis, peter));
 
         bookRepository.save(Arrays.asList(spring, springboot));
     }
 
     @After
     public void deleteAll() {
+        // 删除所有书籍，级联删除关联的作者，但是没有与书籍关联的作者不会被删掉
         bookRepository.deleteAll();
+
+        // 删除所有作者，只能删除没有与书籍关联的作者，与书籍有关联的作者无法被删除
+        authorRepository.deleteAll();
     }
 
     @Test
     public void findAll() {
         assertThat(bookRepository.findAll()).hasSize(2);
+
         assertThat(authorRepository.findAll()).hasSize(3);
     }
 
     @Test
     public void findByName() {
         assertThat(bookRepository.findByName("Spring in Action")).isNotNull();
+
         assertThat(authorRepository.findByName("Lewis")).isNotNull();
     }
 
     @Test
-    public void deleteBook() {
-        Book springboot = bookRepository.findByName("Spring Boot in Action");
-        assertThat(springboot).isNotNull();
+    public void findByNameContaining() {
+        assertThat(bookRepository.findByNameContaining("Spring")).hasSize(2);
 
-        bookRepository.delete(springboot);
+        assertThat(authorRepository.findByNameContaining("e")).hasSize(2);
+    }
+
+    @Test
+    public void margeBook() {
+        Book findByName = bookRepository.findByName("Spring in Action");
+        assertThat(findByName).isNotNull();
+
+        findByName.setName("Spring in Action (4th Edition)");
+        bookRepository.save(findByName);
+
+        assertThat(bookRepository.findByName("Spring in Action")).isNull();
+        assertThat(bookRepository.findByName("Spring in Action (4th Edition)")).isNotNull();
+    }
+
+    @Test
+    public void deleteBook() {
+        Book book = bookRepository.findByName("Spring Boot in Action");
+        assertThat(book).isNotNull();
+
+        bookRepository.delete(book);
 
         assertThat(bookRepository.findAll()).hasSize(1);
+
         assertThat(authorRepository.findAll()).hasSize(2);
         assertThat(authorRepository.findByName("Peter")).isNull();
     }
 
     @Test
-    public void removeAuthor() {
-        Book springboot = bookRepository.findByName("Spring Boot in Action");
-        assertThat(springboot).isNotNull();
+    public void plusAuthor() {
+        Book book = bookRepository.findByName("Spring in Action");
+        assertThat(book).isNotNull();
 
-        Author peter = authorRepository.findByName("Peter");
-        assertThat(peter).isNotNull();
+        Author author = authorRepository.findByName("Jacob");
+        assertThat(author).isNull();
 
-        springboot.getAuthors().remove(peter);
-        bookRepository.save(springboot);
+        book.getAuthors().add(new Author("Jacob"));
+        bookRepository.save(book);
 
-        assertThat(authorRepository.findByName("Peter")).isNotNull();
-        assertThat(bookRepository.findByName("Spring Boot in Action").getAuthors()).hasSize(1);
+        assertThat(bookRepository.findByName("Spring in Action").getAuthors()).hasSize(3);
+
+        assertThat(authorRepository.findAll()).hasSize(4);
+        assertThat(authorRepository.findByName("Jacob")).isNotNull();
     }
 
     @Test
-    public void marge() {
-        Book springboot = bookRepository.findByName("Spring Boot in Action");
-        assertThat(springboot).isNotNull();
+    public void removeAuthor() {
+        Book book = bookRepository.findByName("Spring Boot in Action");
+        assertThat(book).isNotNull();
 
-        springboot.setName("Spring Boot in Action (1st Edition)");
+        Author author = authorRepository.findByName("Peter");
+        assertThat(author).isNotNull();
 
-        Author lewis = authorRepository.findByName("Lewis");
-        assertThat(lewis).isNotNull();
+        book.getAuthors().remove(author);
+        bookRepository.save(book);
 
-        Author jacob = new Author("Jacob");
+        assertThat(bookRepository.findByName("Spring Boot in Action").getAuthors()).hasSize(1);
 
-        Set<Author> springboots = new HashSet<>();
-        springboots.addAll(Arrays.asList(lewis, jacob));
-        springboot.setAuthors(springboots);
-
-        bookRepository.save(springboot);
-
-        assertThat(bookRepository.findByName("Spring Boot in Action")).isNull();
-        assertThat(bookRepository.findByName("Spring Boot in Action (1st Edition)").getAuthors()).hasSize(2);
-
-        assertThat(authorRepository.findAll()).hasSize(4);
+        assertThat(authorRepository.findAll()).hasSize(3);
         assertThat(authorRepository.findByName("Peter")).isNotNull();
-        assertThat(authorRepository.findByName("Jacob")).isNotNull();
+    }
+
+    @Test
+    public void deleteAuthor() {
+        Author author = authorRepository.findByName("Peter");
+        assertThat(author).isNotNull();
+
+        authorRepository.delete(author);
+
+        assertThat(bookRepository.findAll()).hasSize(2);
+
+        assertThat(authorRepository.findAll()).hasSize(3);
+    }
+
+    @Test
+    public void deleteAllAuthors() {
+        authorRepository.deleteAll();
+
+        assertThat(bookRepository.findAll()).hasSize(2);
+
+        assertThat(authorRepository.findAll()).hasSize(3);
     }
 
 }

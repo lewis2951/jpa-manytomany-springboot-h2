@@ -72,11 +72,11 @@ public class BookRepositoryTests {
 
     @Test
     public void margeBook() {
-        Book findByName = bookRepository.findByName("Spring in Action");
-        assertThat(findByName).isNotNull();
+        Book book = bookRepository.findByName("Spring in Action");
+        assertThat(book).isNotNull();
 
-        findByName.setName("Spring in Action (4th Edition)");
-        bookRepository.save(findByName);
+        book.setName("Spring in Action (4th Edition)");
+        bookRepository.save(book);
 
         assertThat(bookRepository.findByName("Spring in Action")).isNull();
         assertThat(bookRepository.findByName("Spring in Action (4th Edition)")).isNotNull();
@@ -90,6 +90,7 @@ public class BookRepositoryTests {
         bookRepository.delete(book);
 
         assertThat(bookRepository.findAll()).hasSize(1);
+        assertThat(bookRepository.findByName("Spring Boot in Action")).isNull();
 
         assertThat(authorRepository.findAll()).hasSize(2);
         assertThat(authorRepository.findByName("Peter")).isNull();
@@ -113,6 +114,20 @@ public class BookRepositoryTests {
     }
 
     @Test
+    public void clearAuthor() {
+        Book book = bookRepository.findByName("Spring in Action");
+        assertThat(book).isNotNull();
+
+        book.getAuthors().clear();
+        bookRepository.save(book);
+
+        assertThat(bookRepository.findAll()).hasSize(2);
+        assertThat(bookRepository.findByName("Spring in Action").getAuthors()).isEmpty();
+
+        assertThat(authorRepository.findAll()).hasSize(3);
+    }
+
+    @Test
     public void removeAuthor() {
         Book book = bookRepository.findByName("Spring Boot in Action");
         assertThat(book).isNotNull();
@@ -123,10 +138,25 @@ public class BookRepositoryTests {
         book.getAuthors().remove(author);
         bookRepository.save(book);
 
+        assertThat(bookRepository.findAll()).hasSize(2);
         assertThat(bookRepository.findByName("Spring Boot in Action").getAuthors()).hasSize(1);
 
         assertThat(authorRepository.findAll()).hasSize(3);
         assertThat(authorRepository.findByName("Peter")).isNotNull();
+    }
+
+    @Test
+    public void removeAllautors() {
+        Book book = bookRepository.findByName("Spring in Action");
+        assertThat(book).isNotNull();
+
+        book.getAuthors().removeAll(book.getAuthors());
+        bookRepository.save(book);
+
+        assertThat(bookRepository.findAll()).hasSize(2);
+        assertThat(bookRepository.findByName("Spring in Action").getAuthors()).isEmpty();
+
+        assertThat(authorRepository.findAll()).hasSize(3);
     }
 
     @Test
@@ -137,8 +167,11 @@ public class BookRepositoryTests {
         authorRepository.delete(author);
 
         assertThat(bookRepository.findAll()).hasSize(2);
+        assertThat(bookRepository.findByName("Spring in Action").getAuthors()).hasSize(2);
+        assertThat(bookRepository.findByName("Spring Boot in Action").getAuthors()).hasSize(2);
 
         assertThat(authorRepository.findAll()).hasSize(3);
+        assertThat(authorRepository.findByName("Peter")).isNotNull();
     }
 
     @Test
@@ -146,6 +179,8 @@ public class BookRepositoryTests {
         authorRepository.deleteAll();
 
         assertThat(bookRepository.findAll()).hasSize(2);
+        assertThat(bookRepository.findByName("Spring in Action").getAuthors()).hasSize(2);
+        assertThat(bookRepository.findByName("Spring Boot in Action").getAuthors()).hasSize(2);
 
         assertThat(authorRepository.findAll()).hasSize(3);
     }

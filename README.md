@@ -1,4 +1,4 @@
-# 两张表（多对多关联）操作 with Spring Boot, Spring Data JPA, H2
+# `Spring Data JPA` 系列 —— 两张表（多对多关联）
 
 这里通过一个完整的例子展示如何通过 `JPA` 对两张表（多对多关联）进行增删改查操作。
 

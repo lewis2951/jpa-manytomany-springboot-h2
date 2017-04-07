@@ -68,13 +68,24 @@ public class AppRunner implements CommandLineRunner {
         plusAuthor("Spring in Action", "Mark");
         display();
 
-        // 移除作者，无作者的书籍也会被移除
-        removeAuthor("Spring Boot in Action", "Peter"); // Peter未删除
-        removeAuthor("Spring Boot in Action", "Lewis"); // Perter未删除，Spring Boot in Action被删除
+        // 清空作者，只是清空关联关系，书籍和作者都还在
+        clearAuthor("Spring in Action");
+        display();
+
+        // 移除作者，只是移除关联关系，书籍和作者都还在
+        removeAuthor("Spring Boot in Action", "Peter");
+        removeAuthor("Spring Boot in Action", "Lewis");
+        display();
+
+        reInit2(); // 重新初始化，作者与书籍的关联关系被移除，不能使用reInit进行初始化
+        display();
+
+        // 移除全部作者，只是移除关联关系，书籍和作者都还在
+        removeAllAuthors("Spring in Action");
         display();
 
         // 删除全部书籍，所有书籍相关的作者都会被删除
-        deleteAllBooks(); // Peter未删除
+        deleteAllBooks(); // Mark未删除
         display();
 
         // --------------------------------------------------
@@ -152,10 +163,19 @@ public class AppRunner implements CommandLineRunner {
     }
 
     /**
-     * 重新初始化
+     * 重新初始化，无书籍的作者不会被清空
      */
     private void reInit() {
         deleteAllBooks();
+        init2();
+    }
+
+    /**
+     * 重新初始化，无书籍的作者也会被清空
+     */
+    private void reInit2() {
+        deleteAllBooks();
+        deleteAllAuthors();
         init2();
     }
 
@@ -255,6 +275,23 @@ public class AppRunner implements CommandLineRunner {
     }
 
     /**
+     * 清空某书的作者
+     *
+     * @param bookName
+     */
+    private void clearAuthor(String bookName) {
+        logger.info(String.format("clearAuthor [book_name:%s]", bookName));
+
+        Book book = bookRepository.findByName(bookName);
+        if (null == book) {
+            return;
+        }
+
+        book.getAuthors().clear();
+        bookRepository.save(book);
+    }
+
+    /**
      * 移除某书的作者
      *
      * @param bookName
@@ -274,6 +311,23 @@ public class AppRunner implements CommandLineRunner {
         }
 
         book.getAuthors().remove(author);
+        bookRepository.save(book);
+    }
+
+    /**
+     * 移除某书的全部作者
+     *
+     * @param bookName
+     */
+    private void removeAllAuthors(String bookName) {
+        logger.info(String.format("removeAllAuthors [book_name:%s]", bookName));
+
+        Book book = bookRepository.findByName(bookName);
+        if (null == book) {
+            return;
+        }
+
+        book.getAuthors().removeAll(book.getAuthors());
         bookRepository.save(book);
     }
 

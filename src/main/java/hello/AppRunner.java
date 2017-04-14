@@ -183,7 +183,7 @@ public class AppRunner implements CommandLineRunner {
      * 清空
      */
     private void deleteAllBooks() {
-        logger.info(String.format("Delete All Books ..."));
+        logger.info(String.format("Delete all books ..."));
 
         bookRepository.deleteAll();
     }
@@ -347,7 +347,7 @@ public class AppRunner implements CommandLineRunner {
      * 删除全部
      */
     private void deleteAllAuthors() {
-        logger.info(String.format("Delete All Authors ..."));
+        logger.info(String.format("Delete all authors ..."));
 
         authorRepository.deleteAll();
     }

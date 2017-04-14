@@ -71,7 +71,7 @@
 
 `src/main/resources/application.properties`
 
-```
+```properties
 ## DATASOURCE Settings
 #spring.datasource.driver-class-name:org.h2.Driver
 #spring.datasource.password:demo

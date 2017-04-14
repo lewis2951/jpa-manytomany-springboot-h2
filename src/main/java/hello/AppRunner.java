@@ -180,7 +180,7 @@ public class AppRunner implements CommandLineRunner {
     }
 
     /**
-     * 清空
+     * 删除全部
      */
     private void deleteAllBooks() {
         logger.info(String.format("Delete all books ..."));

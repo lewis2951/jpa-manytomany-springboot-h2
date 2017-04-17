@@ -38,7 +38,7 @@ public class AppRunner implements CommandLineRunner {
         findBookByName("in Action");
         findBookByName("Spring in Action");
 
-        // 模糊查找，但不支持忽略大小写、忽略收尾空格
+        // 模糊查找，但不支持忽略大小写、忽略首尾空格
         findBookByNameContaining("action");
         findBookByNameContaining("Action ");
         findBookByNameContaining("Action");

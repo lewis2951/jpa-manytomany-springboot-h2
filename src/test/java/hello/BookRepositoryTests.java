@@ -13,6 +13,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,9 +53,25 @@ public class BookRepositoryTests {
 
     @Test
     public void findAll() {
-        assertThat(bookRepository.findAll()).hasSize(2);
+        List<Book> books = bookRepository.findAll();
+		for (Book it : books) {
+			Set<Author> authors = it.getAuthors();
+			//CAN get authors data.
+			System.out.println(authors.size());
+		}
 
-        assertThat(authorRepository.findAll()).hasSize(3);
+		assertThat(bookRepository.findAll()).hasSize(2);
+
+		List<Author> authors = authorRepository.findAll();
+		for (Author it : authors) {
+			//CAN NOT get books data ? Why and HOW ?
+			//HOW can I get the books data ? Or other ways ? 
+			// thanks 
+			Set<Book> books1 = it.getBooks();
+			assertThat(books1 == null);
+		}
+
+		assertThat(authorRepository.findAll()).hasSize(3);
     }
 
     @Test

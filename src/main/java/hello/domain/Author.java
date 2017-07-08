@@ -1,8 +1,11 @@
 package hello.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import java.io.Serializable;
 import java.util.Set;
@@ -20,6 +23,14 @@ public class Author implements Serializable {
 
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books;
+    
+    
+    //why CAN NOT GET the data when using these code ?
+//    @ManyToMany(cascade = CascadeType.ALL)
+//    @JoinTable(name = "BOOK_AUTHOR", joinColumns = {
+//            @JoinColumn(name = "AUTHOR_ID", referencedColumnName = "ID")}, inverseJoinColumns = {
+//            @JoinColumn(name = "BOOK_ID", referencedColumnName = "ID")})
+//    private Set<Book> books;
 
     public Author() {
         super();

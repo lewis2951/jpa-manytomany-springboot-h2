@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,11 +34,20 @@ public class BookRepositoryTests {
         Author mark = new Author("Mark");
         Author peter = new Author("Peter");
 
-        Book spring = new Book("Spring in Action");
-        spring.getAuthors().addAll(Arrays.asList(lewis, mark));
-
-        Book springboot = new Book("Spring Boot in Action");
-        springboot.getAuthors().addAll(Arrays.asList(lewis, peter));
+//        Book spring = new Book("Spring in Action");
+//        spring.getAuthors().addAll(Arrays.asList(lewis, mark));
+//
+//        Book springboot = new Book("Spring Boot in Action");
+//        springboot.getAuthors().addAll(Arrays.asList(lewis, peter));
+        
+        //must using add relations manually, in Book.class constructor
+//		for (Author author : authors) {
+//	        author.getBooks().add(this);
+//	        this.authors.add(author);
+//	    }
+        
+        Book spring = new Book("Spring in Action", new HashSet<Author>(Arrays.asList(lewis, mark)));
+        Book springboot = new Book("Spring Boot in Action", new HashSet<Author>(Arrays.asList(lewis, peter)));
 
         bookRepository.save(Arrays.asList(spring, springboot));
     }
@@ -68,7 +78,11 @@ public class BookRepositoryTests {
 			//HOW can I get the books data ? Or other ways ? 
 			// thanks 
 			Set<Book> books1 = it.getBooks();
-			assertThat(books1 == null);
+			assertThat(books1).isNotNull();
+	        assertThat(books1.size()).isGreaterThan(0);
+	        for(Book itBook : books1) {
+	        	System.out.println(itBook.getName());
+	        }
 		}
 
 		assertThat(authorRepository.findAll()).hasSize(3);
